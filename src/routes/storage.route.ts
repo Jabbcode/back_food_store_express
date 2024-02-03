@@ -1,22 +1,22 @@
 import { Router } from "express";
 import {
-  create,
-  getOne,
-  getAll,
-  update,
-  deleteOne,
+  createStorage,
+  getOneStorage,
+  getStorages,
+  updateStorage,
+  deleteStorage,
 } from "../controllers/storage.controller";
 
 const router = Router();
 
-router.get("/", getAll);
+router.get("/", getStorages);
 
-router.post("/", create);
+router.post("/", createStorage);
 
-router.get("/:id", getOne);
+router.get("/:id", getOneStorage);
 
-router.patch("/:id", update);
+router.patch("/:id", updateStorage);
 
-router.delete("/:id", deleteOne);
+router.delete("/:id", deleteStorage);
 
 export default router;

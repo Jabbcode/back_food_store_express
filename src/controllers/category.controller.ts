@@ -1,13 +1,15 @@
 import { Response, Request } from "express";
-import { Connection } from "../config/typeOrm";
-import { Category } from "../entities/category.entity";
+import {
+  findAll,
+  create,
+  findOne,
+  update,
+  remove,
+} from "../services/category.service";
 
-const CategoryRepository = Connection.getRepository(Category);
-
-export const getAll = async (req: Request, res: Response) => {
+export const getCategories = async (req: Request, res: Response) => {
   try {
-    const category = await CategoryRepository.find();
-
+    const category = await findAll();
     return res.status(200).json(category);
   } catch (error) {
     console.error(error);
@@ -18,7 +20,7 @@ export const getAll = async (req: Request, res: Response) => {
   }
 };
 
-export const create = async (req: Request, res: Response) => {
+export const createCategory = async (req: Request, res: Response) => {
   const { name } = req.body;
 
   if (!name) {
@@ -29,8 +31,7 @@ export const create = async (req: Request, res: Response) => {
   }
 
   try {
-    const category = await CategoryRepository.save({ name });
-
+    const category = await create(req.body);
     return res.status(201).json(category);
   } catch (error) {
     console.error(error);
@@ -41,13 +42,10 @@ export const create = async (req: Request, res: Response) => {
   }
 };
 
-export const getOne = async (req: Request, res: Response) => {
+export const getOneCategory = async (req: Request, res: Response) => {
   const { id } = req.params;
-
   try {
-    const category = await CategoryRepository.findOneBy({
-      id_category: parseInt(id),
-    });
+    const category = await findOne(id);
 
     if (!category) {
       return res.status(400).json({
@@ -55,7 +53,6 @@ export const getOne = async (req: Request, res: Response) => {
         message: `No existe categoria con el ${id}`,
       });
     }
-
     return res.status(200).json(category);
   } catch (error) {
     console.error(error);
@@ -66,27 +63,18 @@ export const getOne = async (req: Request, res: Response) => {
   }
 };
 
-export const update = async (req: Request, res: Response) => {
+export const updateCategory = async (req: Request, res: Response) => {
   const { id } = req.params;
-  const { name } = req.body;
-
   try {
-    const product = await CategoryRepository.findOneBy({
-      id_category: parseInt(id),
-    });
+    const category = await findOne(id);
 
-    if (!product) {
+    if (!category) {
       return res.status(400).json({
         status: "Bad Request",
         message: `No existe categoria con el ${id}`,
       });
     }
-
-    await CategoryRepository.update(
-      { id_category: parseInt(id) },
-      { ...req.body }
-    );
-
+    await update(id, req.body);
     return res.status(200).json({ msg: "Categoria actualizada correctamente" });
   } catch (error) {
     console.error(error);
@@ -97,20 +85,18 @@ export const update = async (req: Request, res: Response) => {
   }
 };
 
-export const deleteOne = async (req: Request, res: Response) => {
+export const deleteCategory = async (req: Request, res: Response) => {
   const { id } = req.params;
-
   try {
-    const product = await CategoryRepository.delete({
-      id_category: parseInt(id),
-    });
+    const category = await findOne(id);
 
-    if (!product) {
+    if (!category) {
       return res.status(400).json({
         status: "Bad Request",
         message: `No existe categoria con el ${id}`,
       });
     }
+    await remove(id);
 
     return res.status(200).json({
       message: "La categoria fue eliminada correctamente",

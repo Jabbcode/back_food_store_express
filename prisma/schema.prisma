@@ -1,0 +1,51 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model Unit {
+  id          Int       @id @default(autoincrement())
+  name        String    @unique @db.VarChar(30)
+  description String    @db.VarChar(100)
+  Product     Product[]
+}
+
+model Category {
+  id      Int                   @id @default(autoincrement())
+  name    String                @unique @db.VarChar(30)
+  product CategoriesOnProduct[]
+}
+
+model Product {
+  id         Int                   @id @default(autoincrement())
+  name       String                @db.VarChar(30)
+  price      Float                 @db.Float
+  unit       Unit                  @relation(fields: [unitId], references: [id])
+  unitId     Int
+  categories CategoriesOnProduct[]
+  Storage    Storage[]
+  createdAt  DateTime              @default(now()) @db.Date
+  updateAt   DateTime              @db.Date
+}
+
+model Storage {
+  id          Int     @id @default(autoincrement())
+  quantity    Int
+  isAvailable Boolean @default(false) @db.TinyInt
+  productId   Int
+  product     Product @relation(fields: [productId], references: [id])
+}
+
+model CategoriesOnProduct {
+  product    Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  productId  Int
+  category   Category @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+  categoryId Int
+  assignedAt DateTime @default(now())
+
+  @@id([productId, categoryId])
+}

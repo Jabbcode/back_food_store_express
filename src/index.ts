@@ -7,9 +7,9 @@ import routeCategory from "./routes/category.route";
 import routeUnit from "./routes/unit.route";
 
 import { SERVER_PORT } from "./config/const";
-import { Connection } from "./config/typeOrm";
+import { ConfigPrisma } from "./config/prisma";
 
-Connection;
+ConfigPrisma();
 
 const app = express();
 

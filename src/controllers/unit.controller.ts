@@ -1,12 +1,15 @@
 import { Response, Request } from "express";
-import { Connection } from "../config/typeOrm";
-import { Unit } from "../entities/unit.entity";
+import {
+  findAll,
+  create,
+  findOne,
+  remove,
+  update,
+} from "../services/unit.service";
 
-const UnitRepository = Connection.getRepository(Unit);
-
-export const getAll = async (req: Request, res: Response) => {
+export const getUnits = async (req: Request, res: Response) => {
   try {
-    const units = await UnitRepository.find();
+    const units = await findAll();
 
     return res.status(200).json(units);
   } catch (error) {
@@ -18,7 +21,7 @@ export const getAll = async (req: Request, res: Response) => {
   }
 };
 
-export const create = async (req: Request, res: Response) => {
+export const createUnit = async (req: Request, res: Response) => {
   const { name, description } = req.body;
 
   if (!name || !description) {
@@ -29,10 +32,7 @@ export const create = async (req: Request, res: Response) => {
   }
 
   try {
-    const unit = await UnitRepository.save({
-      name,
-      description,
-    });
+    const unit = await create(req.body);
 
     return res.status(201).json(unit);
   } catch (error) {
@@ -44,13 +44,11 @@ export const create = async (req: Request, res: Response) => {
   }
 };
 
-export const getOne = async (req: Request, res: Response) => {
+export const getOneUnit = async (req: Request, res: Response) => {
   const { id } = req.params;
 
   try {
-    const unit = await UnitRepository.findOneBy({
-      id_unit: parseInt(id),
-    });
+    const unit = await findOne(id);
 
     if (!unit) {
       return res.status(400).json({
@@ -69,13 +67,11 @@ export const getOne = async (req: Request, res: Response) => {
   }
 };
 
-export const update = async (req: Request, res: Response) => {
+export const updateUnit = async (req: Request, res: Response) => {
   const { id } = req.params;
 
   try {
-    const unit = await UnitRepository.findOneBy({
-      id_unit: parseInt(id),
-    });
+    const unit = await findOne(id);
 
     if (!unit) {
       return res.status(400).json({
@@ -84,7 +80,7 @@ export const update = async (req: Request, res: Response) => {
       });
     }
 
-    await UnitRepository.update({ id_unit: parseInt(id) }, { ...req.body });
+    await update(id, req.body);
 
     return res.status(200).json({ msg: "Unidad actualizado correctamente" });
   } catch (error) {
@@ -96,13 +92,11 @@ export const update = async (req: Request, res: Response) => {
   }
 };
 
-export const deleteOne = async (req: Request, res: Response) => {
+export const deleteUnit = async (req: Request, res: Response) => {
   const { id } = req.params;
 
   try {
-    const unit = await UnitRepository.delete({
-      id_unit: parseInt(id),
-    });
+    const unit = await findOne(id);
 
     if (!unit) {
       return res.status(400).json({
@@ -110,6 +104,8 @@ export const deleteOne = async (req: Request, res: Response) => {
         message: `No existe unidad con el ${id}`,
       });
     }
+
+    await remove(id);
 
     return res.status(200).json({
       message: "La unidad fue eliminada correctamente",

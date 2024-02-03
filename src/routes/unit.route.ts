@@ -1,22 +1,22 @@
 import { Router } from "express";
 import {
-  create,
-  getOne,
-  getAll,
-  update,
-  deleteOne,
+  createUnit,
+  getOneUnit,
+  getUnits,
+  updateUnit,
+  deleteUnit,
 } from "../controllers/unit.controller";
 
 const router = Router();
 
-router.get("/", getAll);
+router.get("/", getUnits);
 
-router.post("/", create);
+router.post("/", createUnit);
 
-router.get("/:id", getOne);
+router.get("/:id", getOneUnit);
 
-router.patch("/:id", update);
+router.patch("/:id", updateUnit);
 
-router.delete("/:id", deleteOne);
+router.delete("/:id", deleteUnit);
 
 export default router;
